@@ -1,0 +1,68 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #F2F2F7;
+  --bg-card: #ffffff;
+  --bg-secondary: #ffffff;
+  --text-primary: #000000;
+  --text-secondary: #3C3C43;
+  --text-tertiary: #8E8E93;
+  --separator: #C6C6C8;
+  --border: #E5E5EA;
+  --tint: #007AFF;
+  --tint-bg: #E5F0FF;
+  --danger: #FF3B30;
+  --input-bg: #F2F2F7;
+  --dot-inactive: #E5E5EA;
+  --bar-track: #F2F2F7;
+  --modal-overlay: rgba(0,0,0,0.4);
+}
+
+.dark {
+  --bg: #000000;
+  --bg-card: #1C1C1E;
+  --bg-secondary: #1C1C1E;
+  --text-primary: #ffffff;
+  --text-secondary: #EBEBF5;
+  --text-tertiary: #8E8E93;
+  --separator: #38383A;
+  --border: #38383A;
+  --tint: #0A84FF;
+  --tint-bg: #1C3A5F;
+  --danger: #FF453A;
+  --input-bg: #2C2C2E;
+  --dot-inactive: #38383A;
+  --bar-track: #2C2C2E;
+  --modal-overlay: rgba(0,0,0,0.6);
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+/* PWA 모바일 최적화 */
+* {
+  -webkit-tap-highlight-color: transparent;
+  box-sizing: border-box;
+}
+
+input, textarea {
+  -webkit-appearance: none;
+  border-radius: 0;
+}
+
+/* Safe area */
+@supports (padding: env(safe-area-inset-bottom)) {
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom, 20px);
+  }
+  .pt-safe {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+}
