@@ -289,6 +289,6 @@ export const analyzeEmotion = (text: string): AnalysisResult => {
   return {
     topCategories,
     isNeutral,
-    allMatches: __DEV__ ? modifierAdjusted : undefined,
+    allMatches: process.env.NODE_ENV !== 'production' ? modifierAdjusted : undefined,
   };
 };
