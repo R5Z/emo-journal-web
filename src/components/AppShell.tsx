@@ -11,12 +11,11 @@ export default function AppShell({ children }: { children: (tab: Tab, setTab: (t
   const { loadSettings } = useSettingsStore();
   const isDark = useIsDark();
   const [tab, setTab] = useState<Tab>('calendar');
-  const [showEditor, setShowEditor] = useState(false);
 
   useEffect(() => {
     loadTheme();
     loadSettings();
-  }, []);
+  }, [loadSettings, loadTheme]);
 
   // dark class 관리
   useEffect(() => {
@@ -27,7 +26,7 @@ export default function AppShell({ children }: { children: (tab: Tab, setTab: (t
     <div className="max-w-[430px] mx-auto min-h-dvh flex flex-col relative" style={{ backgroundColor: 'var(--bg)' }}>
       {/* Content */}
       <div className="flex-1 overflow-y-auto pb-20">
-        {children(tab, setTab, () => setShowEditor(true))}
+        {children(tab, setTab, () => undefined)}
       </div>
 
       {/* Bottom Tab Bar */}
@@ -57,7 +56,7 @@ export default function AppShell({ children }: { children: (tab: Tab, setTab: (t
 
         {/* 쓰기 버튼 */}
         <button
-          onClick={() => setShowEditor(true)}
+          onClick={() => undefined}
           className="flex items-center justify-center rounded-full -mt-3"
           style={{
             width: 52, height: 52,

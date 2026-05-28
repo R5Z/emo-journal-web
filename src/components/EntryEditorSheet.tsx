@@ -35,7 +35,9 @@ export default function EntryEditorSheet({ open, initial, onClose, onSaved }: Pr
   // 열릴 때 초기화 + 포커스 + 슬라이드 인
   useEffect(() => {
     if (open && initial) {
-      setContent(initial.content);
+      queueMicrotask(() => {
+        setContent(initial.content);
+      });
       const raf = requestAnimationFrame(() => setShow(true));
       const focusTimer = setTimeout(() => textareaRef.current?.focus(), 120);
       return () => {
@@ -43,7 +45,9 @@ export default function EntryEditorSheet({ open, initial, onClose, onSaved }: Pr
         clearTimeout(focusTimer);
       };
     }
-    setShow(false);
+    queueMicrotask(() => {
+      setShow(false);
+    });
   }, [open, initial]);
 
   const isDirty = isEditing ? content !== originalContent : content.trim().length > 0;

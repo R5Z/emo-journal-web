@@ -1,5 +1,6 @@
-import type { Metadata, Viewport } from 'next/app';
+import type { Metadata, Viewport } from 'next';
 import './globals.css';
+import PWARegistration from '@/components/PWARegistration';
 
 export const metadata: Metadata = {
   title: '감정 일기',
@@ -31,6 +32,7 @@ export default function RootLayout({
   return (
     <html lang="ko" suppressHydrationWarning>
       <body className="antialiased">
+        <PWARegistration />
         {children}
       </body>
     </html>

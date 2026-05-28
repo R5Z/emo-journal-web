@@ -1,4 +1,5 @@
 import Dexie, { type EntityTable } from 'dexie';
+import { AnalysisResult } from '@/types';
 
 // ============================================
 // Types
@@ -62,7 +63,7 @@ export async function initDB(): Promise<void> {
 
 export async function saveEntry(
   content: string,
-  emotionResult: { topCategories: any[]; isNeutral: boolean },
+  emotionResult: Pick<AnalysisResult, 'topCategories' | 'isNeutral'>,
   targetDate: string,
 ): Promise<number> {
   const now = new Date();
@@ -81,7 +82,7 @@ export async function saveEntry(
 export async function updateEntry(
   id: number,
   content: string,
-  emotionResult: { topCategories: any[]; isNeutral: boolean },
+  emotionResult: Pick<AnalysisResult, 'topCategories' | 'isNeutral'>,
 ): Promise<number> {
   return await db.entries.update(id, {
     content,

@@ -5,6 +5,7 @@ import dayjs from 'dayjs';
 import 'dayjs/locale/ko';
 import EntryCard from '@/components/EntryCard';
 import EntryEditorSheet, { EditorInitial } from '@/components/EntryEditorSheet';
+import PWAInstallPrompt from '@/components/PWAInstallPrompt';
 import { getEmotionDisplay } from '@/domain/emotion/formatter';
 import { getEntriesByDate, getEntriesByRange } from '@/lib/db';
 import { useDateStore } from '@/store/useDateStore';
@@ -129,7 +130,9 @@ export default function HomePage() {
   }, [selectedDate, expanded, calendarGrid, weekDays]);
 
   useEffect(() => {
-    loadData();
+    queueMicrotask(() => {
+      void loadData();
+    });
   }, [loadData]);
 
   const openNew = () => setEditing({ content: '', date: selectedDate });
@@ -304,6 +307,8 @@ export default function HomePage() {
             </div>
           </div>
         )}
+
+        <PWAInstallPrompt />
       </div>
 
       {/* 일기 목록 */}
