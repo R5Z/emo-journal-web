@@ -1,15 +1,16 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import PWARegistration from '@/components/PWARegistration';
+import ServiceWorkerRegister from '@/components/ServiceWorkerRegister';
 
 export const metadata: Metadata = {
-  title: '감정 일기',
+  title: '감정 일기 Vhue',
   description: '감정을 기록하고 시각화하는 일기 앱',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
-    title: '감정 일기',
+    title: '감정 일기 Vhue',
   },
 };
 
@@ -33,6 +34,7 @@ export default function RootLayout({
     <html lang="ko" suppressHydrationWarning>
       <body className="antialiased">
         <PWARegistration />
+        <ServiceWorkerRegister />
         {children}
       </body>
     </html>

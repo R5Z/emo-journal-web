@@ -1,6 +1,6 @@
 {
-  "name": "감정 일기",
-  "short_name": "감정일기",
+  "name": "감정 일기 Vhue",
+  "short_name": "Vhue",
   "description": "감정을 기록하고 시각화하는 일기 앱",
   "start_url": "/",
   "display": "standalone",
@@ -17,6 +17,12 @@
       "src": "/icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
+    },
+    { 
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable" 
     }
   ]
 }
