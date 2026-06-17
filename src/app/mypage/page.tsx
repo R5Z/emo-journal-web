@@ -2,10 +2,12 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { getAllEntries } from '@/lib/db';
-import { loadProfile } from '@/lib/profile';
+import { loadProfile, saveProfile } from '@/lib/profile';
 import { calculateStreaks, getFirstRecordDate, StreakStats } from '@/lib/streak';
 import { DEFAULT_PROFILE, JournalEntry, Profile } from '@/types';
 import { useEditorStore } from '@/store/useEditorStore';
+import EmotionFlowDashboard from '@/components/EmotionFlowDashboard';
+import ProfileEditModal from '@/components/ProfileEditModal';
 
 function SettingsIcon() {
   return (
@@ -31,6 +33,7 @@ export default function MyPage() {
   const [joinDate, setJoinDate] = useState('');
   const [entries, setEntries] = useState<JournalEntry[]>([]);
   const [profile, setProfile] = useState<Profile>(DEFAULT_PROFILE);
+  const [editOpen, setEditOpen] = useState(false);
   const savedToken = useEditorStore((s) => s.savedToken);
 
   const loadData = useCallback(async () => {
@@ -52,8 +55,18 @@ export default function MyPage() {
     loadData();
   }, [loadData, savedToken]);
 
+  const handleSaveProfile = async (newProfile: Profile) => {
+    try {
+      await saveProfile(newProfile);
+      setProfile(newProfile);
+    } catch (e) {
+      console.error('Failed to save profile:', e);
+      window.alert('프로필 저장 중 문제가 발생했습니다.');
+    }
+  };
+
   return (
-    <div className="min-h-0 flex-1 overflow-y-auto bg-neutral-100 pb-8 dark:bg-neutral-950">
+    <div className="flex min-h-0 flex-1 flex-col overflow-y-auto bg-neutral-100 pb-8 dark:bg-neutral-950">
       {/* 헤더 */}
       <header className="flex items-center justify-between bg-neutral-100 px-4 pb-2.5 pt-3 dark:bg-neutral-950">
         <span className="h-[30px] w-[30px]" />
@@ -98,7 +111,7 @@ export default function MyPage() {
             )}
           </div>
           <button
-            onClick={() => window.alert('프로필 편집은 준비 중이에요.')}
+            onClick={() => setEditOpen(true)}
             className="rounded-full bg-neutral-100 px-3.5 py-1.5 text-[15px] font-medium text-blue-500 dark:bg-neutral-800"
             aria-label="프로필 편집"
           >
@@ -128,13 +141,16 @@ export default function MyPage() {
         ))}
       </div>
 
-      {/* 감정 흐름 — 다음 단계에서 EmotionFlowDashboard 채움 */}
-      <div className="mx-4 rounded-xl bg-white p-6 text-center text-sm text-neutral-400 dark:bg-neutral-900 dark:text-neutral-600">
-        감정 흐름 대시보드 준비 중
-        <p className="mt-1 text-[11px] text-neutral-300 dark:text-neutral-700">
-          (총 {entries.length}개 기록)
-        </p>
-      </div>
+      {/* 감정 흐름 + 카테고리 범례 */}
+      <EmotionFlowDashboard entries={entries} />
+
+      {/* 프로필 편집 모달 */}
+      <ProfileEditModal
+        open={editOpen}
+        initialProfile={profile}
+        onSave={handleSaveProfile}
+        onClose={() => setEditOpen(false)}
+      />
     </div>
   );
 }

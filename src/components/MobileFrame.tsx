@@ -8,7 +8,7 @@ import React from 'react';
  */
 export default function MobileFrame({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-[100dvh] bg-neutral-100 dark:bg-neutral-950">
+    <div className="relative mx-auto flex h-[100dvh] w-full flex-col overflow-hidden bg-white sm:max-w-[440px] sm:shadow-2xl sm:ring-1 sm:ring-black/5 dark:bg-neutral-950 dark:sm:ring-white/10">
       {/* 데스크탑 좌측 안내 (모바일에선 숨김) */}
       <aside
         className="pointer-events-none fixed left-8 top-8 hidden font-mono text-xs leading-relaxed text-neutral-400 sm:block dark:text-neutral-600"
