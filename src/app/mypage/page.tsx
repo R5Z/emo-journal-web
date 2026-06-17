@@ -8,6 +8,8 @@ import { DEFAULT_PROFILE, JournalEntry, Profile } from '@/types';
 import { useEditorStore } from '@/store/useEditorStore';
 import EmotionFlowDashboard from '@/components/EmotionFlowDashboard';
 import ProfileEditModal from '@/components/ProfileEditModal';
+import { useRouter } from 'next/navigation';
+
 
 function SettingsIcon() {
   return (
@@ -29,6 +31,8 @@ function SettingsIcon() {
 }
 
 export default function MyPage() {
+  const router = useRouter();
+
   const [stats, setStats] = useState<StreakStats>({ current: 0, longest: 0, total: 0 });
   const [joinDate, setJoinDate] = useState('');
   const [entries, setEntries] = useState<JournalEntry[]>([]);
@@ -74,7 +78,7 @@ export default function MyPage() {
           마이 페이지
         </h1>
         <button
-          onClick={() => window.alert('설정 페이지는 준비 중이에요.')}
+          onClick={() => router.push('/settings')}
           className="flex h-[30px] w-[30px] items-center justify-center rounded-full bg-neutral-200 dark:bg-neutral-800"
           aria-label="설정"
         >
