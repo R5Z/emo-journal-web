@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useLayoutEffect, useRef, useState } from 'react';
 import { getEmotionDisplay } from '@/domain/emotion/formatter';
 import { deleteEntry } from '@/lib/db';
 import { useSettingsStore, FONT_SIZES } from '@/store/useSettingsStore';
@@ -8,19 +8,58 @@ import { JournalEntry } from '@/types';
 
 interface Props {
   entry: JournalEntry;
-  /** 수정: 부모가 에디터 시트를 연다 */
   onEdit: (entry: JournalEntry) => void;
-  /** 삭제 후 목록 새로고침 */
   onRefresh: () => void;
 }
 
+const MENU_WIDTH = 128; // w-32
+const MENU_HEIGHT = 96; // 대략 (수정 + divider + 삭제)
+const EDGE_PADDING = 12;
+
 export default function EntryCard({ entry, onEdit, onRefresh }: Props) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [menuPos, setMenuPos] = useState<{ top: number; left: number } | null>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
   const { fontSize } = useSettingsStore();
   const { colors } = getEmotionDisplay(entry.emotionResult);
 
-  // "YYYY-MM-DD HH:mm:ss" -> "HH:mm"
   const timeStr = entry.createdAt.split(' ')[1].substring(0, 5);
+
+  // 메뉴 열릴 때 트리거 버튼 좌표 기준으로 위치 계산
+  useLayoutEffect(() => {
+    if (!menuOpen || !triggerRef.current) return;
+    const rect = triggerRef.current.getBoundingClientRect();
+    const viewportW = window.innerWidth;
+    const viewportH = window.innerHeight;
+
+    // 기본: 버튼 아래, 오른쪽 정렬
+    let top = rect.bottom + 4;
+    let left = rect.right - MENU_WIDTH;
+
+    // 아래로 못 들어가면 위로
+    if (top + MENU_HEIGHT > viewportH - EDGE_PADDING) {
+      top = rect.top - MENU_HEIGHT - 4;
+    }
+    // 좌우 클램프
+    if (left < EDGE_PADDING) left = EDGE_PADDING;
+    if (left + MENU_WIDTH > viewportW - EDGE_PADDING) {
+      left = viewportW - MENU_WIDTH - EDGE_PADDING;
+    }
+
+    setMenuPos({ top, left });
+  }, [menuOpen]);
+
+  // 스크롤/리사이즈 시 닫기 (위치 어긋남 방지)
+  useLayoutEffect(() => {
+    if (!menuOpen) return;
+    const close = () => setMenuOpen(false);
+    window.addEventListener('scroll', close, true);
+    window.addEventListener('resize', close);
+    return () => {
+      window.removeEventListener('scroll', close, true);
+      window.removeEventListener('resize', close);
+    };
+  }, [menuOpen]);
 
   const handleEdit = () => {
     setMenuOpen(false);
@@ -41,8 +80,7 @@ export default function EntryCard({ entry, onEdit, onRefresh }: Props) {
   };
 
   return (
-    <div className="relative mb-3 flex overflow-hidden rounded-xl bg-white shadow-sm dark:bg-neutral-900">
-      {/* 좌측 감정 색상 바 */}
+    <div className="mb-3 flex overflow-hidden rounded-xl bg-white shadow-sm dark:bg-neutral-900">
       <div
         className="w-[5px] shrink-0"
         style={{ backgroundColor: colors[0] || 'transparent' }}
@@ -55,6 +93,7 @@ export default function EntryCard({ entry, onEdit, onRefresh }: Props) {
           </span>
 
           <button
+            ref={triggerRef}
             onClick={() => setMenuOpen((v) => !v)}
             className="px-1 text-xl font-bold leading-none text-neutral-300 dark:text-neutral-600"
             aria-label="일기 옵션 열기"
@@ -73,8 +112,8 @@ export default function EntryCard({ entry, onEdit, onRefresh }: Props) {
         </p>
       </div>
 
-      {/* 더보기 메뉴 */}
-      {menuOpen && (
+      {/* 메뉴 — fixed로 띄워서 카드 overflow에 안 잘림 */}
+      {menuOpen && menuPos && (
         <>
           <div
             className="fixed inset-0 z-40"
@@ -83,7 +122,8 @@ export default function EntryCard({ entry, onEdit, onRefresh }: Props) {
           />
           <div
             role="menu"
-            className="absolute right-3 top-10 z-50 w-32 overflow-hidden rounded-xl bg-white shadow-lg ring-1 ring-black/5 dark:bg-neutral-800 dark:ring-white/10"
+            className="fixed z-50 w-32 overflow-hidden rounded-xl bg-white shadow-lg ring-1 ring-black/5 dark:bg-neutral-800 dark:ring-white/10"
+            style={{ top: menuPos.top, left: menuPos.left }}
           >
             <button
               role="menuitem"

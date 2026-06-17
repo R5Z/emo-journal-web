@@ -1,7 +1,9 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
-import PWARegistration from '@/components/PWARegistration';
 import ServiceWorkerRegister from '@/components/ServiceWorkerRegister';
+import MobileFrame from '@/components/MobileFrame';
+import BottomTabBar from '@/components/BottomTabBar';
+import EditorSheetMount from '@/components/EditorSheetMount';
 
 export const metadata: Metadata = {
   title: '감정 일기 Vhue',
@@ -32,10 +34,15 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ko" suppressHydrationWarning>
-      <body className="antialiased">
-        <PWARegistration />
+      <body className="antialiased" suppressHydrationWarning>
         <ServiceWorkerRegister />
-        {children}
+        <MobileFrame>
+          <main className="flex min-h-0 flex-1 flex-col overflow-hidden">
+            {children}
+          </main>
+          <BottomTabBar />
+          <EditorSheetMount />
+        </MobileFrame>
       </body>
     </html>
   );

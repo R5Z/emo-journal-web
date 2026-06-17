@@ -4,17 +4,15 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import dayjs from 'dayjs';
 import 'dayjs/locale/ko';
 import EntryCard from '@/components/EntryCard';
-import EntryEditorSheet, { EditorInitial } from '@/components/EntryEditorSheet';
-import PWAInstallPrompt from '@/components/PWAInstallPrompt';
 import { getEmotionDisplay } from '@/domain/emotion/formatter';
 import { getEntriesByDate, getEntriesByRange } from '@/lib/db';
 import { useDateStore } from '@/store/useDateStore';
+import { useEditorStore } from '@/store/useEditorStore';
 import { useSettingsStore, FONT_SIZES } from '@/store/useSettingsStore';
 import { JournalEntry, EmotionMap } from '@/types';
 
 dayjs.locale('ko');
 
-// {colors, stops} -> CSS linear-gradient (네이티브 LinearGradient 대체)
 function toGradient(colors: string[], stops?: number[]): string {
   if (!colors || colors.length === 0) return 'transparent';
   if (colors.length === 1) return colors[0];
@@ -31,11 +29,13 @@ function toGradient(colors: string[], stops?: number[]): string {
 export default function HomePage() {
   const { selectedDate, setSelectedDate } = useDateStore();
   const { weekStart, fontSize, loadSettings } = useSettingsStore();
+  const openNew = useEditorStore((s) => s.openNew);
+  const openEdit = useEditorStore((s) => s.openEdit);
+  const savedToken = useEditorStore((s) => s.savedToken);
 
   const [expanded, setExpanded] = useState(false);
   const [entries, setEntries] = useState<JournalEntry[]>([]);
   const [emotionMap, setEmotionMap] = useState<Record<string, EmotionMap>>({});
-  const [editing, setEditing] = useState<EditorInitial | null>(null);
 
   const today = dayjs();
   const todayNum = today.format('D');
@@ -80,7 +80,6 @@ export default function HomePage() {
 
       const rangeEntries = await getEntriesByRange(startDate, endDate);
 
-      // 날짜별 카테고리 점수 집계 (같은 날 여러 일기 합산)
       const groupedScores: Record<
         string,
         Record<number, { total: number; count: number }>
@@ -129,25 +128,10 @@ export default function HomePage() {
     }
   }, [selectedDate, expanded, calendarGrid, weekDays]);
 
+  // selectedDate / expanded 변화 + 저장 토큰으로 reload
   useEffect(() => {
-    queueMicrotask(() => {
-      void loadData();
-    });
-  }, [loadData]);
-
-  const openNew = () => setEditing({ content: '', date: selectedDate });
-  const openEdit = (entry: JournalEntry) =>
-    setEditing({
-      id: entry.id,
-      content: entry.content,
-      date: entry.createdAt.split(' ')[0],
-    });
-
-  const handleSaved = (date: string) => {
-    setEditing(null);
-    setSelectedDate(date);
     loadData();
-  };
+  }, [loadData, savedToken]);
 
   const weekdayLabels =
     weekStart === 'monday'
@@ -155,10 +139,9 @@ export default function HomePage() {
       : ['일', '월', '화', '수', '목', '금', '토'];
 
   return (
-    <div className="flex h-full flex-col bg-neutral-100 dark:bg-neutral-950">
+    <div className="flex min-h-0 flex-1 flex-col bg-neutral-100 dark:bg-neutral-950">
       {/* 달력 헤더 */}
       <div className="border-b border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900">
-        {/* 확장/축소 토글 핸들 */}
         <button
           onClick={() => setExpanded((v) => !v)}
           className="flex w-full justify-center py-2"
@@ -167,7 +150,6 @@ export default function HomePage() {
           <span className="block h-1 w-10 rounded-full bg-neutral-200 dark:bg-neutral-700" />
         </button>
 
-        {/* 월 + 오늘 버튼 */}
         <div className="relative mb-3 flex items-center justify-center px-5">
           {expanded && (
             <button
@@ -211,7 +193,6 @@ export default function HomePage() {
         </div>
 
         {!expanded ? (
-          // 주간 바
           <div className="flex justify-around gap-1 px-3 pb-4">
             {weekDays.map((day) => {
               const dateStr = day.format('YYYY-MM-DD');
@@ -227,9 +208,9 @@ export default function HomePage() {
                   aria-pressed={isSelected}
                   className={`flex flex-1 flex-col items-center rounded-xl py-2 ${
                     isFuture ? 'opacity-20' : ''
-                  } ${
-                    isSelected && !emotion ? 'bg-blue-500' : ''
-                  } ${isSelected ? 'ring-2 ring-blue-500/40' : ''}`}
+                  } ${isSelected && !emotion ? 'bg-blue-500' : ''} ${
+                    isSelected ? 'ring-2 ring-blue-500/40' : ''
+                  }`}
                   style={emotion ? { background: toGradient(emotion.colors, emotion.stops) } : undefined}
                 >
                   <span
@@ -257,7 +238,6 @@ export default function HomePage() {
             })}
           </div>
         ) : (
-          // 월간 그리드
           <div className="px-4 pb-4">
             <div className="mb-1 grid grid-cols-7">
               {weekdayLabels.map((d) => (
@@ -307,12 +287,10 @@ export default function HomePage() {
             </div>
           </div>
         )}
-
-        <PWAInstallPrompt />
       </div>
 
       {/* 일기 목록 */}
-      <div className="flex-1 overflow-y-auto bg-neutral-100 p-5 pb-24 dark:bg-neutral-950">
+      <div className="min-h-0 flex-1 overflow-y-auto bg-neutral-100 p-5 pb-8 dark:bg-neutral-950">
         {entries.length === 0 ? (
           <div className="mt-10 flex flex-col gap-5">
             <div className="self-start rounded-3xl bg-white p-6 dark:bg-neutral-900">
@@ -321,12 +299,12 @@ export default function HomePage() {
                 style={{ fontSize: FONT_SIZES[fontSize].entry }}
               >
                 {selectedDate === todayStr
-                  ? '오늘 무슨 일 있었어?\n네 마음이 궁금해.'
-                  : '이날은 기록이 없네.\n어떤 하루였는지 들려줄래?'}
+                  ? '오늘 무슨 일 있었나요?'
+                  : '이날은 기록이 없네요.\n어떤 하루였나요?'}
               </p>
             </div>
             <button
-              onClick={openNew}
+              onClick={() => openNew(selectedDate)}
               className="rounded-[20px] border-[1.5px] border-dashed border-neutral-300 p-5 text-right text-neutral-400 dark:border-neutral-700 dark:text-neutral-500"
               aria-label="새 일기 작성"
             >
@@ -344,13 +322,6 @@ export default function HomePage() {
           ))
         )}
       </div>
-
-      <EntryEditorSheet
-        open={editing !== null}
-        initial={editing}
-        onClose={() => setEditing(null)}
-        onSaved={handleSaved}
-      />
     </div>
   );
 }

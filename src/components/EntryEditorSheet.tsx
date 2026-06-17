@@ -110,7 +110,7 @@ export default function EntryEditorSheet({ open, initial, onClose, onSaved }: Pr
       <div
         role="dialog"
         aria-modal="true"
-        className={`relative flex h-[88vh] flex-col rounded-t-3xl bg-white shadow-2xl transition-transform duration-300 ease-out dark:bg-neutral-900 ${
+        className={`relative flex h-[88dvh] flex-col rounded-t-3xl bg-white shadow-2xl transition-transform duration-300 ease-out dark:bg-neutral-900 ${
           show ? 'translate-y-0' : 'translate-y-full'
         }`}
       >
