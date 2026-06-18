@@ -11,6 +11,12 @@ export const metadata: Metadata = {
   title: '감정 일기 Vhue',
   description: '감정을 기록하고 시각화하는 일기 앱',
   manifest: '/manifest.json',
+  openGraph: {
+    title: '감정 일기 Vhue',
+    description: '감정을 기록하고 시각화하는 일기 앱',
+    images: ['/og.png'],
+    type: 'website',
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
