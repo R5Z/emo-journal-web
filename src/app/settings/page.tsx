@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { useSettingsStore } from '@/store/useSettingsStore';
 import { useThemeStore, ThemeMode } from '@/store/useThemeStore';
 import { FontSize, WeekStart } from '@/types';
+import InfoSheet, { InfoDoc } from '@/components/InfoSheet';
+
 
 // ============================================
 // Labels
@@ -241,6 +243,7 @@ export default function SettingsPage() {
   const [themeOpen, setThemeOpen] = useState(false);
   const [fontSizeOpen, setFontSizeOpen] = useState(false);
   const [weekStartOpen, setWeekStartOpen] = useState(false);
+  const [infoDoc, setInfoDoc] = useState<InfoDoc | null>(null);
 
   const notReady = (label: string) =>
     window.alert(`${label}은(는) 준비 중이에요.`);
@@ -289,18 +292,11 @@ export default function SettingsPage() {
         {/* 지원 및 정보 */}
         <SectionLabel>지원 및 정보</SectionLabel>
         <Group>
-          <Row label="자주 묻는 질문" onClick={() => notReady('자주 묻는 질문')} />
+          <Row label="자주 묻는 질문" onClick={() => setInfoDoc('faq')} />
           <Row label="피드백 보내기" onClick={() => notReady('피드백 페이지')} />
-          <Row
-            label="개인정보 처리방침"
-            onClick={() => notReady('개인정보 처리방침')}
-          />
-          <Row label="서비스 이용약관" onClick={() => notReady('서비스 이용약관')} />
-          <Row
-            label="오픈소스 라이선스"
-            onClick={() => notReady('오픈소스 라이선스')}
-          />
-          <Row label="앱 버전" right={<ValueText>v1.0.0</ValueText>} last />
+          <Row label="개인정보 처리방침" onClick={() => setInfoDoc('privacy')} />
+          <Row label="서비스 이용약관" onClick={() => setInfoDoc('terms')} />
+          <Row label="오픈소스 라이선스" onClick={() => setInfoDoc('licenses')} />
         </Group>
       </div>
 
@@ -341,6 +337,12 @@ export default function SettingsPage() {
         selected={weekStart}
         onSelect={setWeekStart}
         onClose={() => setWeekStartOpen(false)}
+      />
+
+      <InfoSheet
+        open={infoDoc !== null}
+        initialDoc={infoDoc}
+        onClose={() => setInfoDoc(null)}
       />
     </div>
   );
