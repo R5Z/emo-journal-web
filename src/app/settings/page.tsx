@@ -6,6 +6,9 @@ import { useSettingsStore } from '@/store/useSettingsStore';
 import { useThemeStore, ThemeMode } from '@/store/useThemeStore';
 import { FontSize, WeekStart } from '@/types';
 import InfoSheet, { InfoDoc } from '@/components/InfoSheet';
+import FeedbackSheet from '@/components/FeedbackSheet';
+
+
 
 
 // ============================================
@@ -244,6 +247,9 @@ export default function SettingsPage() {
   const [fontSizeOpen, setFontSizeOpen] = useState(false);
   const [weekStartOpen, setWeekStartOpen] = useState(false);
   const [infoDoc, setInfoDoc] = useState<InfoDoc | null>(null);
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
+
+
 
   const notReady = (label: string) =>
     window.alert(`${label}은(는) 준비 중이에요.`);
@@ -293,7 +299,7 @@ export default function SettingsPage() {
         <SectionLabel>지원 및 정보</SectionLabel>
         <Group>
           <Row label="자주 묻는 질문" onClick={() => setInfoDoc('faq')} />
-          <Row label="피드백 보내기" onClick={() => notReady('피드백 페이지')} />
+          <Row label="피드백 보내기" onClick={() => setFeedbackOpen(true)} />
           <Row label="개인정보 처리방침" onClick={() => setInfoDoc('privacy')} />
           <Row label="서비스 이용약관" onClick={() => setInfoDoc('terms')} />
           <Row label="오픈소스 라이선스" onClick={() => setInfoDoc('licenses')} />
@@ -343,6 +349,11 @@ export default function SettingsPage() {
         open={infoDoc !== null}
         initialDoc={infoDoc}
         onClose={() => setInfoDoc(null)}
+      />
+      
+      <FeedbackSheet
+       open={feedbackOpen}
+       onClose={() => setFeedbackOpen(false)}
       />
     </div>
   );

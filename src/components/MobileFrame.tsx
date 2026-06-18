@@ -16,7 +16,7 @@ export default function MobileFrame({ children }: { children: React.ReactNode })
       >
         <p>모바일에 최적화된 앱이에요.</p>
         <p className="mt-1 text-neutral-300 dark:text-neutral-700">
-          폰에서 열거 홈 화면에<br />
+          폰에서 열어 홈 화면에<br />
           추가해서 사용해 보세요.
         </p>
       </aside>

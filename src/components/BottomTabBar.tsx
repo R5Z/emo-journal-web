@@ -59,7 +59,7 @@ export default function BottomTabBar() {
         aria-label="홈"
       >
         <CalendarIcon active={isHome} />
-        <span>홈</span>
+        
       </button>
 
       <button
@@ -68,7 +68,7 @@ export default function BottomTabBar() {
         aria-label="새 일기 작성"
       >
         <PlusIcon />
-        <span>글쓰기</span>
+        
       </button>
 
       <button
@@ -78,7 +78,7 @@ export default function BottomTabBar() {
         aria-label="마이페이지"
       >
         <UserIcon active={isMy} />
-        <span>마이</span>
+        
       </button>
     </nav>
   );
