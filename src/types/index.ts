@@ -158,7 +158,7 @@ export interface Profile {
 }
 
 export const DEFAULT_PROFILE: Profile = {
-  nickname: '뷰러',
+  nickname: '하이',
   avatarType: 'emoji',
   avatarEmoji: '🌈',
   avatarImageUri: null,

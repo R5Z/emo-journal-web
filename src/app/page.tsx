@@ -299,7 +299,7 @@ export default function HomePage() {
                 style={{ fontSize: FONT_SIZES[fontSize].entry }}
               >
                 {selectedDate === todayStr
-                  ? '오늘 무슨 일 있었나요?'
+                  ? '오늘은 무슨 일이 있었나요?'
                   : '이날은 기록이 없네요.\n어떤 하루였나요?'}
               </p>
             </div>
